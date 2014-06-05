@@ -1,0 +1,16 @@
+{
+    "name": "eelkevdbos/firebase-php",
+    "description": "Firebase php wrapper for REST API",
+    "author": "eelkevdbos@gmail.com",
+    "require": {
+        "phpunit/phpunit": "4.1.1",
+        "mockery/mockery": "0.9.1",
+        "guzzlehttp/guzzle": "~4.0",
+        "illuminate/support": "~4.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Firebase\\": "src"
+        }
+    }
+}
