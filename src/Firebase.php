@@ -1,5 +1,6 @@
 <?php namespace Firebase;
 
+use Firebase\Normalizer\NormalizerInterface;
 use GuzzleHttp\Message\ResponseInterface;
 
 class Firebase implements FirebaseInterface {
@@ -15,7 +16,7 @@ class Firebase implements FirebaseInterface {
 
     /**
      *
-     * @var mixed
+     * @var \Firebase\Normalizer\NormalizerInterface
      */
     protected $normalizer;
 
@@ -84,6 +85,11 @@ class Firebase implements FirebaseInterface {
         return $this->normalize($response);
     }
 
+    /**
+     * Normalizes the HTTP Request Client response
+     * @param $response
+     * @return mixed
+     */
     public function normalize($response)
     {
         if(!is_null($this->normalizer)) {
@@ -117,7 +123,7 @@ class Firebase implements FirebaseInterface {
      * @param $normalizer
      * @return $this
      */
-    public function setNormalizer($normalizer)
+    public function setNormalizer(NormalizerInterface $normalizer)
     {
         $this->normalizer = $normalizer;
         return $this;
@@ -125,7 +131,7 @@ class Firebase implements FirebaseInterface {
 
     /**
      * Getter for response normalizer
-     * @return mixed
+     * @return \Firebase\Normalizer\NormalizerInterface
      */
     public function getNormalizer()
     {
