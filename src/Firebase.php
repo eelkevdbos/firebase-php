@@ -176,7 +176,15 @@ class Firebase implements FirebaseInterface {
      */
     protected function buildOptions($data = null)
     {
-        $options = array('query' => $this->buildQuery());
+        $options = array(
+            'query' => $this->buildQuery(),
+            'debug' => $this->getOption('debug', false)
+        );
+
+
+        if($timeout = $this->getOption('timeout', false)) {
+            $options['timeout'] = $timeout;
+        }
 
         if(!is_null($data)) {
             $options['json'] = $data;

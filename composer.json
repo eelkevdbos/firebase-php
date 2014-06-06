@@ -1,12 +1,18 @@
 {
     "name": "eelkevdbos/firebase-php",
     "description": "Firebase php wrapper for REST API",
-    "author": "eelkevdbos@gmail.com",
+    "license": "MIT",
+    "author": {
+        "name": "Eelke van den Bos",
+        "email": "eelkevdbos@gmail.com"
+    },
     "require": {
-        "phpunit/phpunit": "4.1.1",
         "mockery/mockery": "0.9.1",
-        "guzzlehttp/guzzle": "~4.0",
+        "guzzlehttp/guzzle": "dev-master#d79c982",
         "illuminate/support": "~4.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "4.1.1"
     },
     "autoload": {
         "psr-4": {
