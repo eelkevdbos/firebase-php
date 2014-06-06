@@ -15,7 +15,7 @@ trait Configurable {
 
     /**
      * Set all configuration options at once
-     * @param $options
+     * @param array $options
      * @return $this
      */
     public function setOptions($options)
@@ -26,7 +26,7 @@ trait Configurable {
 
     /**
      * Merge all configuration options at once
-     * @param $options
+     * @param array $options
      * @return $this
      */
     public function mergeOptions($options)
@@ -59,8 +59,8 @@ trait Configurable {
     /**
      * Getter for individual configuration option
      * @param $key
-     * @param null $defaultValue
-     * @return null
+     * @param mixed $defaultValue
+     * @return mixed
      */
     public function getOption($key, $defaultValue = null)
     {

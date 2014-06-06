@@ -1,7 +1,6 @@
 <?php namespace Firebase;
 
 use Firebase\Normalizer\NormalizerInterface;
-use GuzzleHttp\Message\ResponseInterface;
 
 class Firebase implements FirebaseInterface {
 
@@ -172,7 +171,7 @@ class Firebase implements FirebaseInterface {
 
     /**
      * Build options array for HTTP Request Client
-     * @param mixed $input
+     * @param null|array $data
      * @return array
      */
     protected function buildOptions($data = null)
