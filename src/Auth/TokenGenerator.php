@@ -1,6 +1,7 @@
 <?php namespace Firebase\Auth;
 
 use JWT;
+use DateTime;
 use Firebase\Exception\MissingEncoderException;
 
 class TokenGenerator
@@ -32,7 +33,7 @@ class TokenGenerator
      *
      * @var mixed
      */
-    protected $endcoder;
+    protected $encoder;
 
     /**
      * Initialize the generator with a firebase secret
@@ -127,10 +128,10 @@ class TokenGenerator
                 return $value;
             case 'object':
             default:
-                if ($value instanceof \DateTimeInterface) {
+                if ($value instanceof DateTime) {
                     return $value->getTimestamp();
                 } else {
-                    throw new \UnexpectedValueException('Instance DateTimeInterface required');
+                    throw new \UnexpectedValueException('Instance of DateTime required for a valid timestamp');
                 }
         }
     }
@@ -154,10 +155,10 @@ class TokenGenerator
 
     /**
      * Returns an error message
-     * @param int $errorNumber
+     * @param $errorNumber
      * @return string
      */
-    protected function jsonErrorMessage(int $errorNumber)
+    protected function jsonErrorMessage($errorNumber)
     {
         $messages = array(
             JSON_ERROR_NONE => 'No error has occured',
