@@ -7,7 +7,9 @@
         "email": "eelkevdbos@gmail.com"
     },
     "require": {
+        "php": ">=5.4",
         "mockery/mockery": "0.9.1",
+        "firebase/php-jwt": "dev-master",
         "guzzlehttp/guzzle": "dev-master#d79c982",
         "illuminate/support": "~4.0"
     },
