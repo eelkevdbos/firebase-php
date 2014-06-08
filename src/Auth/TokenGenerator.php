@@ -38,7 +38,7 @@ class TokenGenerator
     /**
      * Initialize the generator with a firebase secret
      *
-     * @param $secret
+     * @param string $secret
      * @param object|null $encoder
      */
     public function __construct($secret, $encoder = null)
@@ -61,6 +61,14 @@ class TokenGenerator
         );
     }
 
+    /**
+     * Encodes token using a JWT encoder
+     * @param array|null $claims
+     * @param string $secret
+     * @param string $hashMethod
+     * @return string
+     * @throws \Firebase\Exception\MissingEncoderException
+     */
     protected function encodeToken($claims, $secret, $hashMethod = 'HS256')
     {
         //ductyping alternative encoder
@@ -155,7 +163,7 @@ class TokenGenerator
 
     /**
      * Returns an error message
-     * @param $errorNumber
+     * @param integer $errorNumber
      * @return string
      */
     protected function jsonErrorMessage($errorNumber)
