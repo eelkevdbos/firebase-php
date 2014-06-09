@@ -70,7 +70,7 @@ class TokenGenerator
 
     /**
      * Encodes token using a JWT encoder
-     * @param array|null $claims
+     * @param array|object $claims
      * @param string $secret
      * @param string $hashMethod
      * @return string
@@ -88,6 +88,11 @@ class TokenGenerator
         }
     }
 
+    /**
+     * Build optional and required claims array
+     * @param array $options
+     * @return array
+     */
     protected function buildClaims($options)
     {
         $claims = array();
@@ -105,42 +110,84 @@ class TokenGenerator
         return $claims;
     }
 
+    /**
+     * Constructs builder method and executes with arguments
+     * @param string $key
+     * @param mixed|null $arg
+     * @return mixed
+     */
     protected function buildClaim($key, $arg = null)
     {
         $claimBuilder = sprintf('build%sClaim', ucfirst($key));
         return $this->{$claimBuilder}($arg);
     }
 
+    /**
+     * Validity of token not before value supplied
+     * @param \DateTime|integer $value
+     * @return array
+     */
     protected function buildNotBeforeClaim($value)
     {
         return array('nbf', $this->getValidTimestamp($value));
     }
 
+    /**
+     * Expires parameter, determines expiry-date other than default: IssuedAt + 24 hrs
+     * @param \DateTime|integer $value
+     * @return array
+     */
     protected function buildExpiresClaim($value)
     {
         return array('exp', $this->getValidTimestamp($value));
     }
 
+    /**
+     * Debug parameter, if set to true, gives Auth debug information in response header
+     * @param $value
+     * @return array
+     */
     protected function buildDebugClaim($value)
     {
         return array('debug', (bool)$value);
     }
 
+    /**
+     * Admin parameter, if set to true, grants read and write access
+     * @param $value
+     * @return array
+     */
     protected function buildAdminClaim($value)
     {
         return array('admin', (bool)$value);
     }
 
+    /**
+     * Version parameter, mandatory for JWT encoder
+     * @param integer|null $value
+     * @return array
+     */
     protected function buildVersionClaim($value = null)
     {
         return array('v', $value ? : $this->version);
     }
 
+    /**
+     * IssuedAt parameter, timestamp to determine expiry-date (24hrs) of token
+     * @param \DateTime|integer|null $value
+     * @return array
+     */
     protected function buildIssuedAtClaim($value = null)
     {
         return array('iat', $value ? : time());
     }
 
+    /**
+     * Make sure the tmiestamp is formatted in seconds after epoch
+     * @param \DateTime|integer $value
+     * @return int
+     * @throws \UnexpectedValueException
+     */
     protected function getValidTimestamp($value)
     {
         switch (gettype($value)) {
