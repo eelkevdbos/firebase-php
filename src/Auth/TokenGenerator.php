@@ -12,7 +12,14 @@ class TokenGenerator
      *
      * @var array
      */
-    protected $availableClaims = array('notBefore', 'expires', 'debug', 'admin', 'issuedAt', 'version');
+    protected $availableClaims = array('data', 'notBefore', 'expires', 'debug', 'admin');
+
+    /**
+     * List of required claim(types)
+     *
+     * @var array
+     */
+    protected $requiredClaims = array('data', 'issuedAt', 'version');
 
     /**
      * Generator version number
@@ -85,18 +92,23 @@ class TokenGenerator
     {
         $claims = array();
 
-        foreach ($this->availableClaims as $claimKey) {
-            if ($claimKey == 'issuedAt' || $claimKey == 'version' || isset($options[$claimKey])) {
-
-                $claimBuilder = sprintf('build%sClaim', ucfirst($claimKey));
-                $claimArgument = isset($options[$claimKey]) ? $options[$claimKey] : null;
-
-                list($key, $claim) = $this->{$claimBuilder}($claimArgument);
-
-                $claims[$key] = $claim;
-            }
+        foreach ($this->requiredClaims as $claimKey) {
+            list($key, $claim) = $this->buildClaim($claimKey);
+            $claims[$key] = $claim;
         }
+
+        foreach (array_intersect($this->availableClaims, array_keys($options)) as $claimKey) {
+            list($key, $claim) = $this->buildClaim($claimKey, $options[$claimKey]);
+            $claims[$key] = $claim;
+        }
+
         return $claims;
+    }
+
+    protected function buildClaim($key, $arg = null)
+    {
+        $claimBuilder = sprintf('build%sClaim', ucfirst($key));
+        return $this->{$claimBuilder}($arg);
     }
 
     protected function buildNotBeforeClaim($value)
