@@ -11,7 +11,7 @@ Add the following line to your composer.json and run `composer update`:
 ```
 {
   "require": {
-    "eelkevdbos/firebase-php": "0.1"
+    "eelkevdbos/firebase-php": "dev-master"
   }
 }
 ```
