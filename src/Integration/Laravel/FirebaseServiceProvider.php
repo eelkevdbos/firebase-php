@@ -1,4 +1,4 @@
-<?php namespace Firebase\Integration;
+<?php namespace Firebase\Integration\Laravel;
 
 use Illuminate\Support\ServiceProvider;
 

@@ -1,9 +1,10 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
+        "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "This file is @generated automatically"
     ],
-    "hash": "d5f0e69ed7a6ee90ac83919ae085641f",
+    "hash": "a6bcb7da36a1099b42044c5ea73bc180",
     "packages": [
         {
             "name": "firebase/php-jwt",
@@ -59,7 +60,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/577a69ff7d0a24e9576a2885c3a7afbaadd51ec1",
+                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/d79c9820cf8f8e4adff35f4f6719503e04674ba4",
                 "reference": "d79c982",
                 "shasum": ""
             },
@@ -216,7 +217,9 @@
                 }
             ],
             "time": "2014-05-30 16:22:28"
-        },
+        }
+    ],
+    "packages-dev": [
         {
             "name": "mockery/mockery",
             "version": "0.9.1",
@@ -282,9 +285,7 @@
                 "testing"
             ],
             "time": "2014-05-02 12:16:45"
-        }
-    ],
-    "packages-dev": [
+        },
         {
             "name": "phpunit/php-code-coverage",
             "version": "2.0.8",
