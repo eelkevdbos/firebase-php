@@ -26,8 +26,8 @@ class FirebaseTest extends PHPUnit_Framework_TestCase {
         );
 
         $this->firebase = new Firebase\Firebase(
-            Mockery::mock('GuzzleHttp\Client'),
-            $this->firebaseConfig
+            $this->firebaseConfig,
+            Mockery::mock('GuzzleHttp\Client')
         );
     }
 

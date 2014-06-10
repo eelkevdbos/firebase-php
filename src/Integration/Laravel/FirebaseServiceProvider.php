@@ -9,8 +9,8 @@ class FirebaseServiceProvider extends ServiceProvider {
         $this->app['firebase'] = $this->app->share(function($app) {
 
             return $app->make('Firebase\Firebase', array(
-                $app->make('GuzzleHttp\Client'),
-                $app['config']->get('services.firebase')
+                $app['config']->get('services.firebase'),
+                $app->make('GuzzleHttp\Client')
             ));
 
         });

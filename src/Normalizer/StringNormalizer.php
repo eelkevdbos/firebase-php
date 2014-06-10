@@ -3,11 +3,13 @@
 
 use GuzzleHttp\Message\ResponseInterface;
 
-class StringNormalizer implements NormalizerInterface {
+class StringNormalizer extends AbstractNormalizer implements NormalizerInterface {
+
+    protected $name = 'string';
 
     public function normalize(ResponseInterface $response)
     {
-        return (string)$response->getBody();
+        return $response->getBody();
     }
 
 } 

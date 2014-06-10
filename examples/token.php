@@ -6,10 +6,10 @@ include dirname(__DIR__) . '/vendor/autoload.php';
 $fbTokenGen = new Firebase\Auth\TokenGenerator($argv[1]);
 
 //setup firebase defaults
-$fb = new Firebase\Firebase(new GuzzleHttp\Client(), array(
+$fb = new Firebase\Firebase(array(
     'base_url' => $argv[2],
     'timeout' => 30
-));
+), new GuzzleHttp\Client());
 
 //set the token via the setOption method or supply the token via constructor options
 $fb->setOption('token',$fbTokenGen->generateToken(array(), array('admin' => true)));

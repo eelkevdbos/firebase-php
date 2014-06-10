@@ -13,4 +13,6 @@ interface FirebaseInterface {
 
     public function delete($path);
 
+    public function normalize($normalizer);
+
 } 

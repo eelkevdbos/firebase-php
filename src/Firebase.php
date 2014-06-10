@@ -15,26 +15,32 @@ class Firebase implements FirebaseInterface {
 
     /**
      *
+     * @var array
+     */
+    protected $normalizers;
+
+    /**
+     *
      * @var \Firebase\Normalizer\NormalizerInterface
      */
     protected $normalizer;
 
-    public function __construct($client, $options = array())
+    public function __construct($options = array(), $client, $normalizers = array())
     {
         $this->setClient($client);
         $this->setOptions($options);
+        $this->setNormalizers($normalizers);
     }
 
     /**
      * Read data from path
      * @param $path
-     * @param null $defaultValue
      * @return mixed
      */
-    public function get($path, $defaultValue = null)
+    public function get($path)
     {
         $response = $this->client->get($this->buildUrl($path), $this->buildOptions());
-        return $this->normalize($response) ?: $defaultValue;
+        return $this->normalizeResponse($response);
     }
 
     /**
@@ -46,7 +52,7 @@ class Firebase implements FirebaseInterface {
     public function set($path, $value)
     {
         $response = $this->client->put($this->buildUrl($path), $this->buildOptions($value));
-        return $this->normalize($response);
+        return $this->normalizeResponse($response);
     }
 
     /**
@@ -58,7 +64,7 @@ class Firebase implements FirebaseInterface {
     public function update($path, $value)
     {
         $response = $this->client->patch($this->buildUrl($path), $this->buildOptions($value));
-        return $this->normalize($response);
+        return $this->normalizeResponse($response);
     }
 
     /**
@@ -69,7 +75,7 @@ class Firebase implements FirebaseInterface {
     public function delete($path)
     {
         $response = $this->client->delete($this->buildUrl($path), $this->buildOptions());
-        return $this->normalize($response);
+        return $this->normalizeResponse($response);
     }
 
     /**
@@ -81,7 +87,24 @@ class Firebase implements FirebaseInterface {
     public function push($path, $value)
     {
         $response = $this->client->post($this->buildUrl($path), $this->buildOptions($value));
-        return $this->normalize($response);
+        return $this->normalizeResponse($response);
+    }
+
+
+    /**
+     * Set a normalizer by string or a normalizer instance
+     * @param string|\Firebase\Normalizer\NormalizerInterface $normalizer
+     * @return $this
+     */
+    public function normalize($normalizer)
+    {
+        //ductyping normalizer
+        if(method_exists($normalizer, 'normalize')) {
+            $this->normalizer = $normalizer;
+        } else if(isset($this->normalizers[$normalizer])) {
+            $this->normalizer = $this->normalizers[$normalizer];
+        }
+        return $this;
     }
 
     /**
@@ -89,12 +112,28 @@ class Firebase implements FirebaseInterface {
      * @param $response
      * @return mixed
      */
-    public function normalize($response)
+    public function normalizeResponse($response)
     {
         if(!is_null($this->normalizer)) {
             return $this->normalizer->normalize($response);
         }
+
+        //default responsen is decoded json
         return $response->json();
+    }
+
+    /**
+     * Set normalizers in an associative array
+     * @param $normalizers
+     * @return $this
+     */
+    public function setNormalizers($normalizers)
+    {
+        foreach($normalizers as $normalizer)
+        {
+            $this->normalizers[$normalizer->getName()] = $normalizer;
+        }
+        return $this;
     }
 
     /**
@@ -115,26 +154,6 @@ class Firebase implements FirebaseInterface {
     public function getClient()
     {
         return $this->client;
-    }
-
-    /**
-     * Setter for response normalizer
-     * @param $normalizer
-     * @return $this
-     */
-    public function setNormalizer(NormalizerInterface $normalizer)
-    {
-        $this->normalizer = $normalizer;
-        return $this;
-    }
-
-    /**
-     * Getter for response normalizer
-     * @return \Firebase\Normalizer\NormalizerInterface
-     */
-    public function getNormalizer()
-    {
-        return $this->normalizer;
     }
 
     /**
@@ -178,13 +197,9 @@ class Firebase implements FirebaseInterface {
     {
         $options = array(
             'query' => $this->buildQuery(),
-            'debug' => $this->getOption('debug', false)
+            'debug' => $this->getOption('debug', false),
+            'timeout' => $this->getOption('timeout', 0)
         );
-
-
-        if($timeout = $this->getOption('timeout', false)) {
-            $options['timeout'] = $timeout;
-        }
 
         if(!is_null($data)) {
             $options['json'] = $data;

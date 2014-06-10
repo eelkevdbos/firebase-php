@@ -2,7 +2,9 @@
 
 use GuzzleHttp\Message\ResponseInterface;
 
-class ObjectNormalizer implements NormalizerInterface {
+class ObjectNormalizer extends AbstractNormalizer implements NormalizerInterface {
+
+    protected $name = 'object';
 
     public function normalize(ResponseInterface $response)
     {

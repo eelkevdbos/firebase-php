@@ -7,4 +7,6 @@ interface NormalizerInterface {
 
     public function normalize(ResponseInterface $response);
 
+    public function getName();
+
 }

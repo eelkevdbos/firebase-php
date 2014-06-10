@@ -10,8 +10,9 @@
     "require": {
         "php": ">=5.4",
         "firebase/php-jwt": "dev-master",
-        "guzzlehttp/guzzle": "dev-master#d79c982",
-        "illuminate/support": "~4.0"
+        "guzzlehttp/guzzle": "4.1.1",
+        "illuminate/support": "~4.0",
+        "react/react": "0.4.1"
     },
     "require-dev": {
         "mockery/mockery": "0.9.1",

@@ -3,7 +3,9 @@
 
 use GuzzleHttp\Message\ResponseInterface;
 
-class SimpleArrayNormalizer implements NormalizerInterface {
+class SimpleArrayNormalizer extends AbstractNormalizer implements NormalizerInterface {
+
+    protected $name = 'simple';
 
     public function normalize(ResponseInterface $response)
     {
