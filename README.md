@@ -48,9 +48,9 @@ For more finegrained authentication, have a look at the [security rules](https:/
 ```php
 $fbTokenGenerator = new Firebase\Auth\TokenGenerator(YOUR_FIREBASE_SECRET);
 
-$fb = new Firebase\Firebase(new GuzzleHttp\Client(), array(
+$fb = new Firebase\Firebase(array(
   'base_url' => YOUR_FIREBASE_BASE_URL
-));
+),new GuzzleHttp\Client());
 
 $fb->setOption('token', $fbTokenGenerator->generateToken(array('email' => 'test@example.com'));
 ```
