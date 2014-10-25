@@ -16,6 +16,8 @@ Add the following line to your composer.json and run `composer update`:
 }
 ```
 
+Alternatively, you can use the command `composer require eelkevbos/firebase-php dev-master`
+
 ## Basic Usage
 By setting your firebase secret as token, you gain superuser access to firebase.
 
