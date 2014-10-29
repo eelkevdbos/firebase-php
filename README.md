@@ -69,6 +69,24 @@ The above snippet of php interacts with the following security rules:
 ```
 And will allow the snippet read-access to all of the nodes, but not write-access.
 
+##Concurrent requests
+Support for concurrent requests has been providing the same api as you would use for regular requests.
+
+```php
+$fb = new Firebase\Firebase(array(
+  'base_url' => YOUR_FIREBASE_BASE_URL,
+  'token' => YOUR_FIREBASE_SECRET,
+),new GuzzleHttp\Client());
+
+$requests = $fb->batch(function ($client) {
+    for($i = 0; $i < 100; $i++) {
+        $client->push('list', $i);
+    }
+});
+
+$pool = new GuzzleHttp\Pool($fb->getClient(), $requests);
+$pool->wait();
+
 ## Integration
 At the moment of writing, integration for Laravel 4.* is supported. A service provider and a facade class are supplied. Installation is done in 2 simple steps after the general installation steps:
 
