@@ -83,6 +83,7 @@ $requests = $fb->batch(function ($client) {
         $client->push('list', $i);
     }
 });
+```
 
 $pool = new GuzzleHttp\Pool($fb->getClient(), $requests);
 $pool->wait();
