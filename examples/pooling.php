@@ -7,19 +7,8 @@ $client = new GuzzleHttp\Client();
 $fb = new Firebase\Firebase(array(
     'token' => $argv[1],
     'base_url' => $argv[2],
-    'timeout' => 30,
-    'debug' => true
+    'timeout' => 30
 ), $client);
-
-//we can use the batched requests returned by the batch method
-//but we will use the RequestsBatchedEvent to pool them up
-$client->getEmitter()->on(
-    'requests.batched',
-    function ($event) use ($client) {
-        $pool = new \GuzzleHttp\Pool($client, $event->getRequests());
-        $pool->wait();
-    }
-);
 
 $requests = $fb->batch(function ($client) {
 
@@ -29,3 +18,9 @@ $requests = $fb->batch(function ($client) {
 
 });
 
+//pooling the requests and executing async
+$pool = new \GuzzleHttp\Pool($client, $requests);
+$pool->wait();
+
+//the pool accepts an optional array as third argument
+//for more info have a look at: http://docs.guzzlephp.org/en/latest/clients.html?highlight=pool
