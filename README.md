@@ -83,10 +83,11 @@ $requests = $fb->batch(function ($client) {
         $client->push('list', $i);
     }
 });
-```
 
 $pool = new GuzzleHttp\Pool($fb->getClient(), $requests);
 $pool->wait();
+
+```
 
 ## Integration
 At the moment of writing, integration for Laravel 4.* is supported. A service provider and a facade class are supplied. Installation is done in 2 simple steps after the general installation steps:
