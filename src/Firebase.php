@@ -248,15 +248,15 @@ class Firebase implements FirebaseMethods {
         //gather requests
         call_user_func_array($callable, array($this));
 
-        $request = $this->requests;
+        $requests = $this->requests;
 
         $emitter = $this->client->getEmitter();
-        $emitter->emit('requests.batched', new RequestsBatchedEvent($this->requests));
+        $emitter->emit('requests.batched', new RequestsBatchedEvent($requests));
 
         //reset the requests for the next batch
         $this->requests = [];
 
-        return $request;
+        return $requests;
     }
 
 }
