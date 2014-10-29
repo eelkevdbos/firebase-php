@@ -8,7 +8,6 @@ class ConfigurableTest extends PHPUnit_Framework_TestCase {
 
     public function setUp()
     {
-        parent::setUp();
         $this->configurable = new DummyConfigurable();
     }
 

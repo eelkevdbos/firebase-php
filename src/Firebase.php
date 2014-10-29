@@ -1,15 +1,17 @@
 <?php namespace Firebase;
 
-use Firebase\Normalizer\NormalizerInterface;
+use Firebase\Event\RequestsBatchedEvent;
+use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Message\RequestInterface;
 
-class Firebase implements FirebaseInterface {
+class Firebase implements FirebaseMethods {
 
     use Configurable;
 
     /**
      * HTTP Request Client
      *
-     * @var mixed
+     * @var ClientInterface
      */
     protected $client;
 
@@ -20,12 +22,18 @@ class Firebase implements FirebaseInterface {
     protected $normalizers;
 
     /**
+     * Request array for batching
+     * @var array
+     */
+    protected $requests = array();
+
+    /**
      *
      * @var \Firebase\Normalizer\NormalizerInterface
      */
     protected $normalizer;
 
-    public function __construct($options = array(), $client, $normalizers = array())
+    public function __construct($options = array(), ClientInterface $client, $normalizers = array())
     {
         $this->setClient($client);
         $this->setOptions($options);
@@ -39,8 +47,8 @@ class Firebase implements FirebaseInterface {
      */
     public function get($path)
     {
-        $response = $this->client->get($this->buildUrl($path), $this->buildOptions());
-        return $this->normalizeResponse($response);
+        $request = $this->createRequest('GET', $path);
+        return $this->handleRequest($request);
     }
 
     /**
@@ -51,8 +59,8 @@ class Firebase implements FirebaseInterface {
      */
     public function set($path, $value)
     {
-        $response = $this->client->put($this->buildUrl($path), $this->buildOptions($value));
-        return $this->normalizeResponse($response);
+        $request = $this->createRequest('PUT', $path, $value);
+        return $this->handleRequest($request);
     }
 
     /**
@@ -63,8 +71,8 @@ class Firebase implements FirebaseInterface {
      */
     public function update($path, $value)
     {
-        $response = $this->client->patch($this->buildUrl($path), $this->buildOptions($value));
-        return $this->normalizeResponse($response);
+        $request = $this->createRequest('PATCH', $path, $value);
+        return $this->handleRequest($request);
     }
 
     /**
@@ -74,8 +82,8 @@ class Firebase implements FirebaseInterface {
      */
     public function delete($path)
     {
-        $response = $this->client->delete($this->buildUrl($path), $this->buildOptions());
-        return $this->normalizeResponse($response);
+        $request = $this->createRequest('DELETE', $path);
+        return $this->handleRequest($request);
     }
 
     /**
@@ -86,10 +94,35 @@ class Firebase implements FirebaseInterface {
      */
     public function push($path, $value)
     {
-        $response = $this->client->post($this->buildUrl($path), $this->buildOptions($value));
-        return $this->normalizeResponse($response);
+        $request = $this->createRequest('POST', $path, $value);
+        return $this->handleRequest($request);
     }
 
+    /**
+     * Create a Request object
+     * @param $method
+     * @param $path
+     * @param $value
+     * @return \GuzzleHttp\Message\RequestInterface
+     */
+    protected function createRequest($method, $path, $value = null)
+    {
+        return $this->client->createRequest($method, $this->buildUrl($path), $this->buildOptions($value));
+    }
+
+    /**
+     * Stores requests when batching, sends request
+     * @param RequestInterface $request
+     * @return mixed
+     */
+    protected function handleRequest(RequestInterface $request)
+    {
+        if (!$this->getOption('batch', false)) {
+            $response = $this->client->send($request);
+            return $this->normalizeResponse($response);
+        }
+        $this->requests[] = $request;
+    }
 
     /**
      * Set a normalizer by string or a normalizer instance
@@ -112,7 +145,7 @@ class Firebase implements FirebaseInterface {
      * @param $response
      * @return mixed
      */
-    public function normalizeResponse($response)
+    protected function normalizeResponse($response)
     {
         if(!is_null($this->normalizer)) {
             return $this->normalizer->normalize($response);
@@ -137,19 +170,17 @@ class Firebase implements FirebaseInterface {
     }
 
     /**
-     * HTTP Request Client setter
-     * @param $client
+     * @param ClientInterface $client
      * @return $this
      */
-    public function setClient($client)
+    public function setClient(ClientInterface $client)
     {
         $this->client = $client;
         return $this;
     }
 
     /**
-     * HTTP Request Client getter
-     * @return mixed
+     * @return ClientInterface
      */
     public function getClient()
     {
@@ -206,6 +237,21 @@ class Firebase implements FirebaseInterface {
         }
 
         return $options;
+    }
+
+
+    public function batch($callable)
+    {
+        //enable batching in the config
+        $this->setOption('batch', true);
+
+        //gather requests
+        call_user_func_array($callable, array($this));
+
+        $emitter = $this->client->getEmitter();
+        $emitter->emit('requests.batched', new RequestsBatchedEvent($this->requests));
+
+        return $this->requests;
     }
 
 }

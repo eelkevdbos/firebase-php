@@ -1,7 +1,7 @@
 <?php namespace Firebase;
 
 
-interface FirebaseInterface {
+interface FirebaseMethods {
 
     public function set($path, $value);
 
@@ -12,7 +12,5 @@ interface FirebaseInterface {
     public function update($path, $value);
 
     public function delete($path);
-
-    public function normalize($normalizer);
 
 } 

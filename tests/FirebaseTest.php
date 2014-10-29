@@ -19,6 +19,9 @@ class FirebaseTest extends PHPUnit_Framework_TestCase {
 
     protected function setUp()
     {
+        $this->request = Mockery::mock('GuzzleHttp\Message\RequestInterface');
+        $this->response = Mockery::mock('GuzzleHttp\Message\ResponseInterface')->shouldIgnoreMissing();
+
         $this->firebaseConfig = array(
             'base_url' => 'http://baseurl',
             'token' => 'aabbcc',
@@ -27,7 +30,7 @@ class FirebaseTest extends PHPUnit_Framework_TestCase {
 
         $this->firebase = new Firebase\Firebase(
             $this->firebaseConfig,
-            Mockery::mock('GuzzleHttp\Client')
+            Mockery::mock('GuzzleHttp\ClientInterface')
         );
     }
 
@@ -78,17 +81,11 @@ class FirebaseTest extends PHPUnit_Framework_TestCase {
     public function testGetRequest()
     {
         $guzzle = $this->firebase->getClient();
-        $response = Mockery::mock('GuzzleHttp\Message\Response');
-
-        $guzzle->shouldReceive('get')->once()->andReturn($response);
-        $response->shouldReceive('json')->once();
-
+        $guzzle->shouldReceive(array(
+            'createRequest' => $this->request,
+            'send' => $this->response
+        ))->once();
         $this->firebase->get('/test.json');
-    }
-
-    public function tearDown()
-    {
-        Mockery::close();
     }
 
 } 
