@@ -111,3 +111,7 @@ At the moment of writing, integration for Laravel 4.* is supported. A service pr
       'token' => YOUR_FIREBASE_SECRET
     )
 ```
+
+##Eventing
+
+The library supports the EventEmitter pattern. The event-emitter is attached to the Firebase class. A list of events available will follow soon.
