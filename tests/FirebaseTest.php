@@ -18,10 +18,32 @@ class FirebaseTest extends PHPUnit_Framework_TestCase {
      */
     protected $firebaseConfig;
 
+    /**
+     * @var GuzzleHttp\Message\RequestInterface
+     */
+    protected $request;
+
+    /**
+     * @var GuzzleHttp\Event\EmitterInterface
+     */
+    protected $emitter;
+
+    /**
+     * @var GuzzleHttp\Message\ResponseInterface
+     */
+    protected $response;
+
+    /**
+     * @var GuzzleHttp\Client;
+     */
+    protected $client;
+
     protected function setUp()
     {
         $this->request = Mockery::mock('GuzzleHttp\Message\RequestInterface');
         $this->response = Mockery::mock('GuzzleHttp\Message\ResponseInterface')->shouldIgnoreMissing();
+        $this->emitter = Mockery::mock('GuzzleHttp\Event\EmitterInterface')->shouldIgnoreMissing();
+        $this->client = Mockery::mock('GuzzleHttp\ClientInterface');
 
         $this->firebaseConfig = array(
             'base_url' => 'http://baseurl',
@@ -31,7 +53,7 @@ class FirebaseTest extends PHPUnit_Framework_TestCase {
 
         $this->firebase = new Firebase\Firebase(
             $this->firebaseConfig,
-            Mockery::mock('GuzzleHttp\ClientInterface')
+            $this->client
         );
     }
 
@@ -79,14 +101,20 @@ class FirebaseTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(array(), $result);
     }
 
-    public function testGetRequest()
+    public function testRequestMethods()
     {
         $guzzle = $this->firebase->getClient();
+
         $guzzle->shouldReceive(array(
             'createRequest' => $this->request,
             'send' => $this->response
-        ))->once();
+        ))->times(5);
+
         $this->firebase->get('/test.json');
+        $this->firebase->push('/test.json', 'a');
+        $this->firebase->update('/test.json', 'c');
+        $this->firebase->set('/test.json', 'b');
+        $this->firebase->delete('/test.json');
     }
 
     public function testNamedNormalizer()
@@ -104,7 +132,43 @@ class FirebaseTest extends PHPUnit_Framework_TestCase {
 
     public function testBatchRequests()
     {
-        
+        $this->firebase->getClient()
+            ->shouldReceive('createRequest')
+            ->twice()
+            ->andReturn($this->request);
+
+        $this->firebase->getClient()
+            ->shouldReceive('getEmitter')
+            ->once()
+            ->andReturn($this->emitter);
+
+        $requests = $this->firebase->batch(function ($fb) {
+            $fb->get('/test/1');
+            $fb->get('/test/2');
+        });
+
+        $this->assertCount(2, $requests);
+    }
+
+    public function testBatchEvents()
+    {
+        $this->firebase->getClient()
+            ->shouldReceive('createRequest')
+            ->once()
+            ->andReturn($this->request);
+
+        $this->firebase->getClient()
+            ->shouldReceive('getEmitter')
+            ->once()
+            ->andReturn($emitter = new \GuzzleHttp\Event\Emitter());
+
+        $emitter->on('requests.batched', function ($event) {
+            $this->assertCount(1, $event->getRequests());
+        });
+
+        $this->firebase->batch(function ($fb) {
+            $fb->get('/test/1');
+        });
     }
 
 } 

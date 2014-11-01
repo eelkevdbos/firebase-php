@@ -3,7 +3,8 @@
 require_once 'traits/ProtectedCaller.php';
 require_once 'stubs/DummyEncoder.php';
 
-class TokenGeneratorTest extends PHPUnit_Framework_TestCase {
+class TokenGeneratorTest extends PHPUnit_Framework_TestCase
+{
 
     use ProtectedCaller;
 
@@ -26,8 +27,30 @@ class TokenGeneratorTest extends PHPUnit_Framework_TestCase {
 
     public function testGenerateToken()
     {
-        $encoderArguments = $this->generator->generateToken(array(), array('issuedAt' => 1));
-        $this->assertEquals(array(array('d' => array(), 'iat' => time(), 'v' => 0), $this->secret, 'HS256'), $encoderArguments);
+        $token = $this->generator->generateToken(array(), array('issuedAt' => 1));
+
+        $this->assertTrue(is_string($token));
+
+        //ensure the same holds for the resolver
+        \Firebase\Auth\TokenGenerator::$encoderResolver = function () {
+            return 'JWT';
+        };
+
+        $tokenViaResolver = $this->generator->generateToken(array(), array('issuedAt' => 1));
+
+        $this->assertTrue(is_string($tokenViaResolver));
+    }
+
+    public function testInvalidResolver()
+    {
+        $this->setExpectedException('Firebase\Exception\MissingEncoderException');
+
+        //instantiate class without encode member function
+        \Firebase\Auth\TokenGenerator::$encoderResolver = function () {
+            return new StdClass;
+        };
+
+        $this->generator->generateToken(array(), array('issuedAt' => 1));
     }
 
     /**

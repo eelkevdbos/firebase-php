@@ -1,6 +1,5 @@
 <?php namespace Firebase\Auth;
 
-use JWT;
 use DateTime;
 use Firebase\Exception\MissingEncoderException;
 
@@ -36,22 +35,17 @@ class TokenGenerator
     protected $secret;
 
     /**
-     * Supply optional encoder over default JWT
-     *
-     * @var mixed
+     * @var \Callable
      */
-    protected $encoder;
+    public static $encoderResolver;
 
     /**
      * Initialize the generator with a firebase secret
-     *
      * @param string $secret
-     * @param object|null $encoder
      */
-    public function __construct($secret, $encoder = null)
+    public function __construct($secret)
     {
         $this->secret = $secret;
-        $this->encoder = $encoder;
     }
 
     /**
@@ -78,14 +72,28 @@ class TokenGenerator
      */
     protected function encodeToken($claims, $secret, $hashMethod = 'HS256')
     {
-        //ductyping alternative encoder
-        if (!is_null($this->encoder) && method_exists($this->encoder, 'encode')) {
-            return $this->encoder->encode($claims, $secret, $hashMethod);
-        } else if (method_exists('JWT', 'encode')) {
-            return JWT::encode($claims, $secret, $hashMethod);
-        } else {
-            throw new MissingEncoderException('No JSON Web Token encoder could be found');
+        if (method_exists($encoder = $this->resolveEncoder(), 'encode')) {
+            return call_user_func_array(array($encoder, 'encode'), array($claims, $secret, $hashMethod));
         }
+
+        throw new MissingEncoderException('No JSON Web Token encoder could be found');
+    }
+
+
+    /**
+     * Resolve JWT encoder via static variable
+     * @param string $default
+     * @return mixed|string
+     */
+    protected function resolveEncoder($default = 'JWT')
+    {
+        if (isset(static::$encoderResolver)) {
+
+            return call_user_func(static::$encoderResolver);
+
+        }
+
+        return $default;
     }
 
     /**
@@ -169,7 +177,7 @@ class TokenGenerator
      */
     protected function buildVersionClaim($value = null)
     {
-        return array('v', $value ? : $this->version);
+        return array('v', $value ?: $this->version);
     }
 
     /**
@@ -179,7 +187,7 @@ class TokenGenerator
      */
     protected function buildIssuedAtClaim($value = null)
     {
-        return array('iat', $value ? : time());
+        return array('iat', $value ?: time());
     }
 
     /**
@@ -190,17 +198,15 @@ class TokenGenerator
      */
     protected function getValidTimestamp($value)
     {
-        switch (gettype($value)) {
-            case 'integer':
-                return $value;
-            case 'object':
-            default:
-                if ($value instanceof DateTime) {
-                    return $value->getTimestamp();
-                } else {
-                    throw new \UnexpectedValueException('Instance of DateTime required for a valid timestamp');
-                }
+        if (gettype($value) == 'integer') {
+            return $value;
         }
+
+        if ($value instanceof DateTime) {
+            return $value->getTimestamp();
+        }
+
+        throw new \UnexpectedValueException('Instance of DateTime required for a valid timestamp');
     }
 
     /**
