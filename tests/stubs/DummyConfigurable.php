@@ -2,7 +2,7 @@
 
 class DummyConfigurable {
 
-    use \Firebase\Configurable;
+    use Firebase\Configurable;
 
     /**
      * Set initial item in config

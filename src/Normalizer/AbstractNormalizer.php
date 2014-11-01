@@ -3,11 +3,11 @@
 
 use GuzzleHttp\Message\ResponseInterface;
 
-class AbstractNormalizer implements NormalizerInterface {
+abstract class AbstractNormalizer implements NormalizerInterface {
 
     protected $name;
 
-    public function normalize(ResponseInterface $response) {}
+    abstract function normalize(ResponseInterface $response);
 
     public function getName()
     {

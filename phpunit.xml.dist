@@ -2,6 +2,7 @@
 
 <phpunit backupGlobals="false"
          backupStaticAttributes="false"
+         codecoverage="true"
          colors="true"
          convertErrorsToExceptions="true"
          convertNoticesToExceptions="true"
@@ -11,6 +12,7 @@
          syntaxCheck="false"
          bootstrap="vendor/autoload.php"
         >
+    <formatter type="clover" usefile="false" />
     <testsuites>
         <testsuite name="Vdbf Firebase Php Test Suite">
             <directory>./tests/</directory>
