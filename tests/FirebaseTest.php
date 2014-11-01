@@ -3,7 +3,8 @@
 require_once 'traits/ProtectedCaller.php';
 require_once 'stubs/DummyNormalizer.php';
 
-class FirebaseTest extends PHPUnit_Framework_TestCase {
+class FirebaseTest extends PHPUnit_Framework_TestCase
+{
 
     use ProtectedCaller;
 
@@ -127,7 +128,7 @@ class FirebaseTest extends PHPUnit_Framework_TestCase {
     public function testDuckNormalizer()
     {
         $this->firebase->normalize(new \DummyNormalizer());
-        $this->assertEquals($this->callProtected($this->firebase, 'normalizeResponse', array('A')), 'A');
+        $this->assertEquals($this->callProtected($this->firebase, 'normalizeResponse', array($this->response)), $this->response);
     }
 
     public function testBatchRequests()

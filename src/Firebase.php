@@ -1,6 +1,7 @@
 <?php namespace Firebase;
 
 use Firebase\Event\RequestsBatchedEvent;
+use Firebase\Normalizer\NormalizerInterface;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Message\RequestInterface;
 
@@ -131,12 +132,16 @@ class Firebase implements FirebaseMethods {
      */
     public function normalize($normalizer)
     {
-        //ductyping normalizer
-        if(method_exists($normalizer, 'normalize')) {
-            $this->normalizer = $normalizer;
-        } else if(isset($this->normalizers[$normalizer])) {
+        if(is_string($normalizer) && isset($this->normalizers[$normalizer])) {
+
             $this->normalizer = $this->normalizers[$normalizer];
+
+        } else if($normalizer instanceof NormalizerInterface) {
+
+            $this->normalizer = $normalizer;
+
         }
+
         return $this;
     }
 
