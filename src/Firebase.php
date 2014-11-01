@@ -104,7 +104,7 @@ class Firebase implements FirebaseMethods {
      * Create a Request object
      * @param string $method
      * @param string $path
-     * @param array|string $value
+     * @param mixed $value
      * @return RequestInterface
      */
     protected function createRequest($method, $path, $value = null)
@@ -227,7 +227,7 @@ class Firebase implements FirebaseMethods {
 
     /**
      * Build options array for HTTP Request Client
-     * @param null|array $data
+     * @param mixed $data
      * @return array
      */
     protected function buildOptions($data = null)
