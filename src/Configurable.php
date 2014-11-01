@@ -46,8 +46,8 @@ trait Configurable {
 
     /**
      * Setter for individual configuration option
-     * @param $key
-     * @param $value
+     * @param string $key
+     * @param mixed $value
      * @return $this
      */
     public function setOption($key, $value)
@@ -58,7 +58,7 @@ trait Configurable {
 
     /**
      * Getter for individual configuration option
-     * @param $key
+     * @param string $key
      * @param mixed $defaultValue
      * @return mixed
      */

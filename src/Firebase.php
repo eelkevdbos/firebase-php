@@ -4,6 +4,7 @@ use Firebase\Event\RequestsBatchedEvent;
 use Firebase\Normalizer\NormalizerInterface;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Message\RequestInterface;
+use GuzzleHttp\Message\ResponseInterface;
 
 class Firebase implements FirebaseMethods {
 
@@ -101,10 +102,10 @@ class Firebase implements FirebaseMethods {
 
     /**
      * Create a Request object
-     * @param $method
-     * @param $path
-     * @param $value
-     * @return \GuzzleHttp\Message\RequestInterface
+     * @param string $method
+     * @param string $path
+     * @param array|string $value
+     * @return RequestInterface
      */
     protected function createRequest($method, $path, $value = null)
     {
@@ -127,7 +128,7 @@ class Firebase implements FirebaseMethods {
 
     /**
      * Set a normalizer by string or a normalizer instance
-     * @param string|\Firebase\Normalizer\NormalizerInterface $normalizer
+     * @param string|NormalizerInterface $normalizer
      * @return $this
      */
     public function normalize($normalizer)
@@ -147,10 +148,10 @@ class Firebase implements FirebaseMethods {
 
     /**
      * Normalizes the HTTP Request Client response
-     * @param $response
+     * @param ResponseInterface $response
      * @return mixed
      */
-    protected function normalizeResponse($response)
+    protected function normalizeResponse(ResponseInterface $response)
     {
         if(!is_null($this->normalizer)) {
             return $this->normalizer->normalize($response);
