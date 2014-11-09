@@ -6,7 +6,10 @@ use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Message\RequestInterface;
 use GuzzleHttp\Message\ResponseInterface;
 
-class Firebase implements FirebaseMethods {
+class Firebase implements FirebaseMethods
+{
+
+    const NULL_ARGUMENT = -1;
 
     use Configurable;
 
@@ -47,7 +50,7 @@ class Firebase implements FirebaseMethods {
      * @param $path
      * @return mixed
      */
-    public function get($path)
+    public function get($path = '')
     {
         $request = $this->createRequest('GET', $path);
         return $this->handleRequest($request);
@@ -59,9 +62,12 @@ class Firebase implements FirebaseMethods {
      * @param $value
      * @return mixed
      */
-    public function set($path, $value)
+    public function set($path, $value = self::NULL_ARGUMENT)
     {
+        list($path, $value) = $this->evaluatePathValueArguments(func_get_args());
+
         $request = $this->createRequest('PUT', $path, $value);
+
         return $this->handleRequest($request);
     }
 
@@ -71,9 +77,12 @@ class Firebase implements FirebaseMethods {
      * @param $value
      * @return mixed
      */
-    public function update($path, $value)
+    public function update($path, $value = self::NULL_ARGUMENT)
     {
+        list($path, $value) = $this->evaluatePathValueArguments(func_get_args());
+
         $request = $this->createRequest('PATCH', $path, $value);
+
         return $this->handleRequest($request);
     }
 
@@ -82,7 +91,7 @@ class Firebase implements FirebaseMethods {
      * @param $path
      * @return mixed
      */
-    public function delete($path)
+    public function delete($path = '')
     {
         $request = $this->createRequest('DELETE', $path);
         return $this->handleRequest($request);
@@ -94,9 +103,12 @@ class Firebase implements FirebaseMethods {
      * @param $value
      * @return mixed
      */
-    public function push($path, $value)
+    public function push($path, $value = self::NULL_ARGUMENT)
     {
+        list($path, $value) = $this->evaluatePathValueArguments(func_get_args());
+
         $request = $this->createRequest('POST', $path, $value);
+
         return $this->handleRequest($request);
     }
 
@@ -133,11 +145,11 @@ class Firebase implements FirebaseMethods {
      */
     public function normalize($normalizer)
     {
-        if(is_string($normalizer) && isset($this->normalizers[$normalizer])) {
+        if (is_string($normalizer) && isset($this->normalizers[$normalizer])) {
 
             $this->normalizer = $this->normalizers[$normalizer];
 
-        } else if($normalizer instanceof NormalizerInterface) {
+        } else if ($normalizer instanceof NormalizerInterface) {
 
             $this->normalizer = $normalizer;
 
@@ -153,7 +165,7 @@ class Firebase implements FirebaseMethods {
      */
     protected function normalizeResponse(ResponseInterface $response)
     {
-        if(!is_null($this->normalizer)) {
+        if (!is_null($this->normalizer)) {
             return $this->normalizer->normalize($response);
         }
 
@@ -168,8 +180,7 @@ class Firebase implements FirebaseMethods {
      */
     public function setNormalizers($normalizers)
     {
-        foreach($normalizers as $normalizer)
-        {
+        foreach ($normalizers as $normalizer) {
             $this->normalizers[$normalizer->getName()] = $normalizer;
         }
         return $this;
@@ -195,15 +206,18 @@ class Firebase implements FirebaseMethods {
 
     /**
      * Prefix url with a base_url if present
-     * @param $path
+     * @param string $path
      * @return string
      */
     protected function buildUrl($path)
     {
-        $url = $this->getOption('base_url','') . $path;
+        $baseUrl = $this->getOption('base_url', '');
+
+        //add trailing slash to the url if not supplied in the base_url setting nor supplied in path #6
+        $url = $baseUrl . ((substr($baseUrl, -1) != '/' && substr($path, 0, 1) != '/') ? '/' : '') . $path;
 
         //append .json if fix_url option is true and .json is missing
-        if($this->getOption('fix_url', true) && strpos($url, '.json') === false) {
+        if ($this->getOption('fix_url', true) && strpos($url, '.json') === false) {
             $url .= '.json';
         }
 
@@ -218,7 +232,7 @@ class Firebase implements FirebaseMethods {
     {
         $params = array();
 
-        if($token = $this->getOption('token', false)) {
+        if ($token = $this->getOption('token', false)) {
             $params['auth'] = $token;
         }
 
@@ -238,7 +252,7 @@ class Firebase implements FirebaseMethods {
             'timeout' => $this->getOption('timeout', 0)
         );
 
-        if(!is_null($data)) {
+        if (!is_null($data)) {
             $options['json'] = $data;
         }
 
@@ -263,6 +277,17 @@ class Firebase implements FirebaseMethods {
         $this->requests = [];
 
         return $requests;
+    }
+
+    /**
+     * Handle single argument calls to set/update/push methods #7
+     * @param $args
+     * @return array
+     */
+    protected function evaluatePathValueArguments($args)
+    {
+        $hasSecondArgument = $args[1] !== self::NULL_ARGUMENT;
+        return array($hasSecondArgument ? '' : $args[0], $hasSecondArgument ? $args[0] : $args[1]);
     }
 
 }

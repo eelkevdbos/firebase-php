@@ -118,6 +118,18 @@ class FirebaseTest extends PHPUnit_Framework_TestCase
         $this->firebase->delete('/test.json');
     }
 
+    public function testEmptyGetter()
+    {
+        $guzzle = $this->firebase->getClient();
+
+        $guzzle->shouldReceive(array(
+            'createRequest' => $this->request,
+            'send' => $this->response
+        ))->once();
+
+        $this->firebase->get();
+    }
+
     public function testNamedNormalizer()
     {
         //test multiple normalizers
