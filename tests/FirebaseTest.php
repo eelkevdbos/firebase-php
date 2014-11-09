@@ -178,4 +178,19 @@ class FirebaseTest extends PHPUnit_Framework_TestCase
         });
     }
 
+    public function testAlternativeInjection()
+    {
+        $optionsRef = array();
+
+        \Firebase\Firebase::setClientResolver(function ($options) use (&$optionsRef) {
+            $optionsRef = $options;
+            return Mockery::mock('GuzzleHttp\ClientInterface');
+        });
+
+        $firebase = new \Firebase\Firebase(array('injected_option' => true));
+
+        $this->assertInstanceOf('GuzzleHttp\ClientInterface', $firebase->getClient());
+        $this->assertArrayHasKey('injected_option', $optionsRef);
+    }
+
 } 
