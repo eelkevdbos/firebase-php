@@ -45,7 +45,7 @@ class Firebase implements FirebaseMethods
     /**
      * @var Closure
      */
-    static $clientResolver;
+    public static $clientResolver;
 
     /**
      * @param array $options
