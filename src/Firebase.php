@@ -1,5 +1,6 @@
 <?php namespace Firebase;
 
+use Closure;
 use Firebase\Event\RequestsBatchedEvent;
 use Firebase\Normalizer\NormalizerInterface;
 use GuzzleHttp\ClientInterface;
@@ -9,9 +10,12 @@ use GuzzleHttp\Message\ResponseInterface;
 class Firebase implements FirebaseMethods
 {
 
-    const NULL_ARGUMENT = -1;
-
     use Configurable;
+
+    /**
+     * Helper for handling single argument setters
+     */
+    const NULL_ARGUMENT = -1;
 
     /**
      * HTTP Request Client
@@ -38,11 +42,29 @@ class Firebase implements FirebaseMethods
      */
     protected $normalizer;
 
-    public function __construct($options = array(), ClientInterface $client, $normalizers = array())
+    /**
+     * @var Closure
+     */
+    static $clientResolver;
+
+    /**
+     * @param array $options
+     * @param null|ClientInterface $client
+     * @param array $normalizers
+     */
+    public function __construct($options = array(), ClientInterface $client = null, $normalizers = array())
     {
-        $this->setClient($client);
         $this->setOptions($options);
         $this->setNormalizers($normalizers);
+        is_null($client) ? $this->resolveClient() : $this->setClient($client);
+    }
+
+    /**
+     * @param Closure $resolver
+     */
+    public static function setClientResolver(Closure $resolver)
+    {
+        static::$clientResolver = $resolver;
     }
 
     /**
@@ -64,10 +86,7 @@ class Firebase implements FirebaseMethods
      */
     public function set($path, $value = self::NULL_ARGUMENT)
     {
-        list($path, $value) = $this->evaluatePathValueArguments(func_get_args());
-
         $request = $this->createRequest('PUT', $path, $value);
-
         return $this->handleRequest($request);
     }
 
@@ -79,10 +98,7 @@ class Firebase implements FirebaseMethods
      */
     public function update($path, $value = self::NULL_ARGUMENT)
     {
-        list($path, $value) = $this->evaluatePathValueArguments(func_get_args());
-
         $request = $this->createRequest('PATCH', $path, $value);
-
         return $this->handleRequest($request);
     }
 
@@ -105,10 +121,7 @@ class Firebase implements FirebaseMethods
      */
     public function push($path, $value = self::NULL_ARGUMENT)
     {
-        list($path, $value) = $this->evaluatePathValueArguments(func_get_args());
-
         $request = $this->createRequest('POST', $path, $value);
-
         return $this->handleRequest($request);
     }
 
@@ -121,6 +134,7 @@ class Firebase implements FirebaseMethods
      */
     protected function createRequest($method, $path, $value = null)
     {
+        list($path, $value) = $this->evaluatePathValueArguments(array($path, $value));
         return $this->client->createRequest($method, $this->buildUrl($path), $this->buildOptions($value));
     }
 
@@ -211,13 +225,12 @@ class Firebase implements FirebaseMethods
      */
     protected function buildUrl($path)
     {
-        $baseUrl = $this->getOption('base_url', '');
+        $baseUrl = $this->getOption('base_url');
 
         //add trailing slash to the url if not supplied in the base_url setting nor supplied in path #6
-        $url = $baseUrl . ((substr($baseUrl, -1) != '/' && substr($path, 0, 1) != '/') ? '/' : '') . $path;
+        $url = $baseUrl . ((substr($baseUrl, -1) == '/' || substr($path, 0, 1) == '/') ? '' : '/') . $path;
 
-        //append .json if fix_url option is true and .json is missing
-        if ($this->getOption('fix_url', true) && strpos($url, '.json') === false) {
+        if (strpos($url, '.json') === false) {
             $url .= '.json';
         }
 
@@ -288,6 +301,16 @@ class Firebase implements FirebaseMethods
     {
         $hasSecondArgument = $args[1] !== self::NULL_ARGUMENT;
         return array($hasSecondArgument ? '' : $args[0], $hasSecondArgument ? $args[0] : $args[1]);
+    }
+
+    /**
+     * Inject client dependency
+     */
+    protected function resolveClient()
+    {
+        if (!isset($this->client)) {
+            $this->setClient(call_user_func(static::$clientResolver, $this->getOptions()));
+        }
     }
 
 }

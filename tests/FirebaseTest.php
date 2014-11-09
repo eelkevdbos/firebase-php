@@ -82,12 +82,6 @@ class FirebaseTest extends PHPUnit_Framework_TestCase
 
         $result = self::callProtected($this->firebase, 'buildUrl', array($pathWithoutJson));
         $this->assertEquals($this->firebaseConfig['base_url'] . $pathWithJson, $result);
-
-        //test turning off appending .json
-        $this->firebase->setOption('fix_url', false);
-
-        $result = self::callProtected($this->firebase, 'buildUrl', array($pathWithoutJson));
-        $this->assertEquals($this->firebaseConfig['base_url'] . $pathWithoutJson, $result);
     }
 
     public function testQueryBuilder()
