@@ -5,18 +5,19 @@ firebase-php
 
 Firebase php wrapper for REST API
 
-## Installation
-Add the following line to your composer.json and run `composer update`:
+##Prerequisites
+- PHP >= 5.4
+- Composer (recommended, not required)
 
-```
-{
-  "require": {
-    "eelkevdbos/firebase-php": "dev-master"
-  }
-}
-```
+## Installation using composer (recommended)
+Set your projects minimum stability to `dev` in `composer.json`. This is caused by the PHP-JWT dependency. After updating the composer.json file, simply execute: `composer require eelkevbos/firebase-php dev-master`
 
-Alternatively, you can use the command `composer require eelkevbos/firebase-php dev-master`
+##Installation without composer
+For a vanilla install, the following dependencies should be downloaded:
+- firebase/php-jwt [github](https://github.com/firebase/php-jwt/releases/tag/v1.0.0)
+- guzzlehttp/guzzle [github](https://github.com/guzzle/guzzle/releases/tag/5.0.3)
+
+Loading the dependencies can be achieved by using any [PSR-4 autoloader](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-4-autoloader-examples.md).
 
 ## Basic Usage
 By setting your firebase secret as token, you gain superuser access to firebase.
