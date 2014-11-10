@@ -70,7 +70,7 @@ The above snippet of php interacts with the following security rules:
 And will allow the snippet read-access to all of the nodes, but not write-access.
 
 ##Concurrent requests
-Support for concurrent requests has been providing the same api as you would use for regular requests.
+Execution of concurrent requests can be achieved with the same syntax as regular requests. Simply wrap them in a Closure and call the closure via the `batch` method and you are all set.
 
 ```php
 $fb = new Firebase\Firebase(array(
@@ -114,4 +114,5 @@ At the moment of writing, integration for Laravel 4.* is supported. A service pr
 
 ##Eventing
 
-The library supports the EventEmitter pattern. The event-emitter is attached to the Firebase class. A list of events available will follow soon.
+The library supports the EventEmitter pattern. The event-emitter is attached to the Firebase class. Events currently available:
+- RequestsBatchedEvent
