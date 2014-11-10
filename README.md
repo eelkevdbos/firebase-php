@@ -5,18 +5,19 @@ firebase-php
 
 Firebase php wrapper for REST API
 
-## Installation
-Add the following line to your composer.json and run `composer update`:
+##Prerequisites
+- PHP >= 5.4
+- Composer (recommended, not required)
 
-```
-{
-  "require": {
-    "eelkevdbos/firebase-php": "dev-master"
-  }
-}
-```
+## Installation using composer (recommended)
+Set your projects minimum stability to `dev` in `composer.json`. This is caused by the PHP-JWT dependency. After updating the composer.json file, simply execute: `composer require eelkevbos/firebase-php dev-master`
 
-Alternatively, you can use the command `composer require eelkevbos/firebase-php dev-master`
+##Installation without composer
+For a vanilla install, the following dependencies should be downloaded:
+- firebase/php-jwt [github](https://github.com/firebase/php-jwt/releases/tag/v1.0.0)
+- guzzlehttp/guzzle [github](https://github.com/guzzle/guzzle/releases/tag/5.0.3)
+
+Loading the dependencies can be achieved by using any [PSR-4 autoloader](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-4-autoloader-examples.md).
 
 ## Basic Usage
 By setting your firebase secret as token, you gain superuser access to firebase.
@@ -70,7 +71,7 @@ The above snippet of php interacts with the following security rules:
 And will allow the snippet read-access to all of the nodes, but not write-access.
 
 ##Concurrent requests
-Support for concurrent requests has been providing the same api as you would use for regular requests.
+Execution of concurrent requests can be achieved with the same syntax as regular requests. Simply wrap them in a Closure and call the closure via the `batch` method and you are all set.
 
 ```php
 $fb = new Firebase\Firebase(array(
@@ -114,4 +115,5 @@ At the moment of writing, integration for Laravel 4.* is supported. A service pr
 
 ##Eventing
 
-The library supports the EventEmitter pattern. The event-emitter is attached to the Firebase class. A list of events available will follow soon.
+The library supports the EventEmitter pattern. The event-emitter is attached to the Firebase class. Events currently available:
+- RequestsBatchedEvent
