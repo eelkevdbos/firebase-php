@@ -9,10 +9,11 @@
          convertWarningsToExceptions="true"
          processIsolation="false"
          stopOnFailure="false"
-         syntaxCheck="false"
+         syntaxCheck="true"
+         strict="false"
+         verbose="true"
          bootstrap="vendor/autoload.php"
         >
-    <formatter type="clover" usefile="false" />
     <testsuites>
         <testsuite name="Vdbf Firebase Php Test Suite">
             <directory>./tests/</directory>
@@ -22,12 +23,15 @@
         <listener class="\Mockery\Adapter\Phpunit\TestListener"></listener>
     </listeners>
     <filter>
-        <whitelist>
-            <directory>./</directory>
+        <whitelist processUncoveredFilesFromWhitelist="true">
+            <directory suffix=".php">./src</directory>
             <exclude>
                 <directory>./vendor</directory>
                 <directory>./tests</directory>
             </exclude>
         </whitelist>
     </filter>
+    <logging>
+        <log type="coverage-clover" target="coverage.clover" />
+    </logging>
 </phpunit>
