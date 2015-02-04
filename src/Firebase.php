@@ -300,7 +300,7 @@ class Firebase implements FirebaseMethods
     protected function evaluatePathValueArguments($args)
     {
         $hasSecondArgument = $args[1] !== self::NULL_ARGUMENT;
-        return array($hasSecondArgument ? '' : $args[0], $hasSecondArgument ? $args[0] : $args[1]);
+        return array(!$hasSecondArgument ? '' : $args[0], !$hasSecondArgument ? $args[0] : $args[1]);
     }
 
     /**

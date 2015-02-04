@@ -48,8 +48,8 @@ class FirebaseTest extends PHPUnit_Framework_TestCase
 
         $this->firebaseConfig = array(
             'base_url' => 'http://baseurl',
-            'token' => 'aabbcc',
-            'timeout' => 30
+            'token'    => 'aabbcc',
+            'timeout'  => 30
         );
 
         $this->firebase = new Firebase\Firebase(
@@ -102,7 +102,7 @@ class FirebaseTest extends PHPUnit_Framework_TestCase
 
         $guzzle->shouldReceive(array(
             'createRequest' => $this->request,
-            'send' => $this->response
+            'send'          => $this->response
         ))->times(5);
 
         $this->firebase->get('/test.json');
@@ -118,7 +118,7 @@ class FirebaseTest extends PHPUnit_Framework_TestCase
 
         $guzzle->shouldReceive(array(
             'createRequest' => $this->request,
-            'send' => $this->response
+            'send'          => $this->response
         ))->once();
 
         $this->firebase->get();
@@ -184,6 +184,7 @@ class FirebaseTest extends PHPUnit_Framework_TestCase
 
         \Firebase\Firebase::setClientResolver(function ($options) use (&$optionsRef) {
             $optionsRef = $options;
+
             return Mockery::mock('GuzzleHttp\ClientInterface');
         });
 
@@ -191,6 +192,18 @@ class FirebaseTest extends PHPUnit_Framework_TestCase
 
         $this->assertInstanceOf('GuzzleHttp\ClientInterface', $firebase->getClient());
         $this->assertArrayHasKey('injected_option', $optionsRef);
+    }
+
+    public function testEvaluatePathValueArguments()
+    {
+
+        $firebase = new \Firebase\Firebase(array('injected_option' => true));
+        $pathAndValue = $this->callProtected($firebase, 'evaluatePathValueArguments', [['a', 'b']]);
+
+        $this->assertEquals($pathAndValue, ['a', 'b']);
+
+        $pathNullValue = $this->callProtected($firebase, 'evaluatePathValueArguments', [['a', \Firebase\Firebase::NULL_ARGUMENT]]);
+        $this->assertEquals($pathNullValue, ['', 'a']);
     }
 
 } 
