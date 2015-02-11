@@ -10,7 +10,7 @@ Firebase php wrapper for REST API
 - Composer (recommended, not required)
 
 ## Installation using composer (recommended)
-Set your projects minimum stability to `dev` in `composer.json`. This is caused by the PHP-JWT dependency. After updating the composer.json file, simply execute: `composer require eelkevbos/firebase-php dev-master`
+Set your projects minimum stability to `dev` in `composer.json`. This is caused by the PHP-JWT dependency. After updating the composer.json file, simply execute: `composer require eelkevdbos/firebase-php dev-master`
 
 ##Installation without composer
 For a vanilla install, the following dependencies should be downloaded:
