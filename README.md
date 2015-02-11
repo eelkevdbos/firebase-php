@@ -91,26 +91,46 @@ $pool->wait();
 ```
 
 ## Integration
-At the moment of writing, integration for Laravel 4.* is supported. A service provider and a facade class are supplied. Installation is done in 2 simple steps after the general installation steps:
+At the moment of writing, integration for Laravel 5.* is supported. A service provider and a facade class are supplied. Installation is done in 2 simple steps after the general installation steps:
 
-1. edit `app/config/app.php` to add the service provider and the facade class
-```
-    'providers' => array(
-      ...
-      'Firebase\Integration\Laravel\FirebaseServiceProvider'
-    )
-    
-    'aliases' => array(
-      ...
-      'Firebase' => 'Firebase\Integration\Laravel\Firebase'
-    )
-```
-2. edit `app/config/services.php` (supplied by default from L4.2) to add `token` and `base_url` settings
-```
-    'firebase' => array(
-      'base_url' => YOUR_FIREBASE_BASE_URL,
-      'token' => YOUR_FIREBASE_SECRET
-    )
+ 1. edit `config/app.php` to add the service provider and the facade class
+
+            'providers' => array(
+             ...
+             'Firebase\Integration\Laravel\FirebaseServiceProvider'
+            )
+            
+            'aliases' => array(
+             ...
+             'Firebase' => 'Firebase\Integration\Laravel\Firebase'
+            )
+
+ 2. edit `config/services.php` to add `token` and `base_url` settings
+
+            'firebase' => [
+              'base_url' => YOUR_FIREBASE_BASE_URL,
+              'token' => YOUR_FIREBASE_SECRET
+            ]
+
+###  Laravel Basic Usage
+Firebase methods available:
+
+```php
+//retrieve a node
+Firebase::get('/node/path');
+
+//set the content of a node
+Firebase::set('/node/path', array('data' => 'toset'));
+
+//update the content of a node
+Firebase::update(/node/path, array('data' => 'toupdate'));
+
+//delete a node
+Firebase::delete('/node/path');
+
+//push a new item to a node
+Firebase::push('/node/path', array('data' => 'topush'));
+
 ```
 
 ##Eventing
