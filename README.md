@@ -123,7 +123,7 @@ Firebase::get('/node/path');
 Firebase::set('/node/path', array('data' => 'toset'));
 
 //update the content of a node
-Firebase::update(/node/path, array('data' => 'toupdate'));
+Firebase::update('/node/path', array('data' => 'toupdate'));
 
 //delete a node
 Firebase::delete('/node/path');
