@@ -7,6 +7,7 @@ Firebase php wrapper for REST API
 
 ##Prerequisites
 - PHP >= 5.4
+- Firebase >= 1.1.1
 - Composer (recommended, not required)
 
 ## Installation using composer (recommended)
