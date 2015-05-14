@@ -214,6 +214,19 @@ class FirebaseTest extends PHPUnit_Framework_TestCase
         $firebase = \Firebase\Firebase::initialize($this->firebaseConfig['base_url'], $this->token);
         $this->assertEquals($firebase->getOption('base_url'), $this->firebaseConfig['base_url']);
         $this->assertEquals($firebase->getOption('token'), $this->token);
+
+        //unset client resolver and check for default guzzle client implementation
+        \Firebase\Firebase::$clientResolver = null;
+        $firebase = \Firebase\Firebase::initialize($this->firebaseConfig['base_url'], $this->token);
+        $this->assertInstanceOf('GuzzleHttp\Client', $firebase->getClient());
+    }
+
+    public function testCriteriaParsing()
+    {
+        $query = $this->callProtected($this->firebase, 'buildQuery', [new \Firebase\Criteria('$key', ['equalTo' => 'A'])]);
+
+        $this->assertArrayHasKey('orderBy', $query);
+        $this->assertArrayHasKey('equalTo', $query);
     }
 
 } 
