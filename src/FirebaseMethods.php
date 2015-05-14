@@ -5,7 +5,7 @@ interface FirebaseMethods {
 
     public function set($path, $value);
 
-    public function get($path);
+    public function get($path, Criteria $criteria = null);
 
     public function push($path, $value);
 

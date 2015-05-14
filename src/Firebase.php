@@ -7,6 +7,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Message\RequestInterface;
 use GuzzleHttp\Message\ResponseInterface;
+use GuzzleHttp\Query;
 
 class Firebase implements FirebaseMethods
 {
@@ -92,9 +93,9 @@ class Firebase implements FirebaseMethods
      * @param $path
      * @return mixed
      */
-    public function get($path = '')
+    public function get($path = '', Criteria $criteria = null)
     {
-        $request = $this->createRequest('GET', $path);
+        $request = $this->createRequest('GET', $path, $criteria);
         return $this->handleRequest($request);
     }
 
@@ -261,9 +262,14 @@ class Firebase implements FirebaseMethods
      * Build Query parameters for HTTP Request Client
      * @return array
      */
-    protected function buildQuery()
+    protected function buildQuery($data)
     {
         $params = array();
+
+        if ($data instanceof Criteria) {
+            $params = array_merge($params, $data->getParams());
+            $params['orderBy'] = $data->getOrderBy();
+        }
 
         if ($token = $this->getOption('token', false)) {
             $params['auth'] = $token;
@@ -280,12 +286,12 @@ class Firebase implements FirebaseMethods
     protected function buildOptions($data = null)
     {
         $options = array(
-            'query' => $this->buildQuery(),
+            'query' => new Query($this->buildQuery($data)),
             'debug' => $this->getOption('debug', false),
             'timeout' => $this->getOption('timeout', 0)
         );
 
-        if (!is_null($data)) {
+        if (!is_null($data) && !($data instanceof Criteria)) {
             $options['json'] = $data;
         }
 
