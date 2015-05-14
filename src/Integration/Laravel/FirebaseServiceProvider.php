@@ -2,18 +2,23 @@
 
 use Illuminate\Support\ServiceProvider;
 
-class FirebaseServiceProvider extends ServiceProvider {
+class FirebaseServiceProvider extends ServiceProvider
+{
 
     public function register()
     {
-        $this->app['firebase'] = $this->app->share(function($app) {
+        $this->app->bind('firebase', function ($app) {
 
-            return $app->make('Firebase\Firebase', array(
-                $app['config']->get('services.firebase'),
+            /** @var \Illuminate\Contracts\Config\Repository $config */
+            $config = $app['config'];
+
+            /** @var \Illuminate\Contracts\Foundation\Application $app */
+            return $app->make('Firebase\Firebase', [
+                $config->get('services.firebase'),
                 $app->make('GuzzleHttp\Client')
-            ));
+            ]);
 
-        });
+        }, true);
     }
 
 }
