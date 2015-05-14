@@ -2,11 +2,8 @@
 
 include dirname(__DIR__) . '/vendor/autoload.php';
 
-$fb = new Firebase\Firebase(array(
-    'token' => $argv[1],
-    'base_url' => $argv[2],
-    'timeout' => 30,
-    'debug' => true
-), new GuzzleHttp\Client());
+use Firebase\Firebase;
+
+$fb = $fb = Firebase::initialize($argv[2], $argv[1], ['debug' => true]);
 
 print_r($fb->get($argv[3]));

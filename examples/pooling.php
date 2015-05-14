@@ -2,24 +2,22 @@
 
 include dirname(__DIR__) . '/vendor/autoload.php';
 
-$client = new GuzzleHttp\Client();
+use Firebase\Firebase;
+use GuzzleHttp\Pool;
 
-$fb = new Firebase\Firebase(array(
-    'token' => $argv[1],
-    'base_url' => $argv[2],
-    'timeout' => 30
-), $client);
+$fb = Firebase::initialize($argv[2], $argv[1]);
 
-$requests = $fb->batch(function ($client) {
+$requests = $fb->batch(function ($fb) {
 
+    /** @var Firebase $fb */
     for($i = 0; $i < 100; $i++) {
-        $client->push('list', $i);
+        $fb->push('list', $i);
     }
 
 });
 
 //pooling the requests and executing async
-$pool = new \GuzzleHttp\Pool($client, $requests);
+$pool = new Pool($fb->getClient(), $requests);
 $pool->wait();
 
 //the pool accepts an optional array as third argument

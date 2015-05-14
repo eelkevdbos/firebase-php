@@ -3,6 +3,7 @@
 use Closure;
 use Firebase\Event\RequestsBatchedEvent;
 use Firebase\Normalizer\NormalizerInterface;
+use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Message\RequestInterface;
 use GuzzleHttp\Message\ResponseInterface;
@@ -46,6 +47,25 @@ class Firebase implements FirebaseMethods
      * @var Closure
      */
     public static $clientResolver;
+
+    /**
+     * Default method to initialize a Firebase client, will set the ClientInterface dependency for you if not already set
+     * @param string $url
+     * @param null|string $token
+     * @param array $options
+     */
+    public static function initialize($url, $token = null, $options = [], $normalizers = [])
+    {
+        //strap guzzle client if it is not set in as resolver property
+        if (!isset(static::$clientResolver)) {
+            static::setClientResolver(function ($options) {
+                $clientOptions = isset($options['client']) ? $options['client'] : [];
+                return new Client($clientOptions);
+            });
+        }
+
+        return new static(array_merge($options, ['base_url' => $url, 'token' => $token]), null, $normalizers);
+    }
 
     /**
      * @param array $options

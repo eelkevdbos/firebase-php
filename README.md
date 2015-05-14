@@ -24,10 +24,13 @@ Loading the dependencies can be achieved by using any [PSR-4 autoloader](https:/
 By setting your firebase secret as token, you gain superuser access to firebase.
 
 ```php
-$fb = new Firebase\Firebase(array(
-  'base_url' => YOUR_FIREBASE_BASE_URL,
-  'token' => YOUR_FIREBASE_SECRET,
-),new GuzzleHttp\Client());
+
+use Firebase\Firebase;
+
+$fb = Firebase::initialize(YOUR_FIREBASE_URL, YOUR_FIREBASE_SECRET);
+
+//or set your own implementation of the ClientInterface as second parameter of the regular constructor
+$fb = new Firebase([ 'base_url' => YOUR_FIREBASE_BASE_URL, 'token' => YOUR_FIREBASE_SECRET ], new GuzzleHttp\Client());
 
 //retrieve a node
 $nodeGetContent = $fb->get('/node/path');
@@ -50,13 +53,15 @@ $nodePushContent = $fb->push('/node/path', array('name' => 'item on list'));
 For more finegrained authentication, have a look at the [security rules](https://www.firebase.com/docs/security/security-rules.html). Using the token generator allows you to make use of the authentication services supplied by Firebase.
 
 ```php
-$fbTokenGenerator = new Firebase\Auth\TokenGenerator(YOUR_FIREBASE_SECRET);
 
-$fb = new Firebase\Firebase(array(
-  'base_url' => YOUR_FIREBASE_BASE_URL
-),new GuzzleHttp\Client());
+use Firebase\Firebase;
+use Firebase\Auth\TokenGenerator;
 
-$fb->setOption('token', $fbTokenGenerator->generateToken(array('email' => 'test@example.com'));
+$tokenGenerator = new TokenGenerator(YOUR_FIREBASE_SECRET);
+
+$token = $tokenGenerator->generateToken(['email' => 'test@example.com'])
+
+$fb = Firebase::initialize(YOUR_FIREBASE_BASE_URL, $token);
 ```
 
 The above snippet of php interacts with the following security rules:
@@ -75,10 +80,10 @@ And will allow the snippet read-access to all of the nodes, but not write-access
 Execution of concurrent requests can be achieved with the same syntax as regular requests. Simply wrap them in a Closure and call the closure via the `batch` method and you are all set.
 
 ```php
-$fb = new Firebase\Firebase(array(
-  'base_url' => YOUR_FIREBASE_BASE_URL,
-  'token' => YOUR_FIREBASE_SECRET,
-),new GuzzleHttp\Client());
+
+use Firebase\Firebase;
+
+$fb = Firebase::initialize(YOUR_FIREBASE_BASE_URL, YOUR_FIREBASE_SECRET);
 
 $requests = $fb->batch(function ($client) {
     for($i = 0; $i < 100; $i++) {

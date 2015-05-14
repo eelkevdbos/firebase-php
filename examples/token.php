@@ -2,16 +2,13 @@
 
 include dirname(__DIR__) . '/vendor/autoload.php';
 
+use Firebase\Firebase;
+use Firebase\Auth\TokenGenerator;
+
 //initialize token generator with secret
-$fbTokenGen = new Firebase\Auth\TokenGenerator($argv[1]);
+$fbTokenGen = new TokenGenerator($argv[1]);
 
-//setup firebase defaults
-$fb = new Firebase\Firebase(array(
-    'base_url' => $argv[2],
-    'timeout' => 30
-), new GuzzleHttp\Client());
-
-//set the token via the setOption method or supply the token via constructor options
-$fb->setOption('token',$fbTokenGen->generateToken(array(), array('admin' => true)));
+//initialize with custom token
+$fb = Firebase::initialize($argv[2], $fbTokenGen->generateToken(array(), array('admin' => true)));
 
 print_r($fb->get($argv[3]));

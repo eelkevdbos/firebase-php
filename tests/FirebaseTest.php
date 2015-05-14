@@ -39,8 +39,11 @@ class FirebaseTest extends PHPUnit_Framework_TestCase
      */
     protected $client;
 
+    protected $token;
+
     protected function setUp()
     {
+        $this->token = 'aabbcc';
         $this->request = Mockery::mock('GuzzleHttp\Message\RequestInterface');
         $this->response = Mockery::mock('GuzzleHttp\Message\ResponseInterface')->shouldIgnoreMissing();
         $this->emitter = Mockery::mock('GuzzleHttp\Event\EmitterInterface')->shouldIgnoreMissing();
@@ -48,7 +51,7 @@ class FirebaseTest extends PHPUnit_Framework_TestCase
 
         $this->firebaseConfig = array(
             'base_url' => 'http://baseurl',
-            'token'    => 'aabbcc',
+            'token'    => $this->token,
             'timeout'  => 30
         );
 
@@ -88,7 +91,7 @@ class FirebaseTest extends PHPUnit_Framework_TestCase
     {
         //testing query building with tokenk supplied
         $result = self::callProtected($this->firebase, 'buildQuery');
-        $this->assertEquals(array('auth' => 'aabbcc'), $result);
+        $this->assertEquals(array('auth' => $this->token), $result);
 
         //testing query building without token
         $this->firebase->setOption('token', null);
@@ -204,6 +207,13 @@ class FirebaseTest extends PHPUnit_Framework_TestCase
 
         $pathNullValue = $this->callProtected($firebase, 'evaluatePathValueArguments', [['a', \Firebase\Firebase::NULL_ARGUMENT]]);
         $this->assertEquals($pathNullValue, ['', 'a']);
+    }
+
+    public function testDefaultStaticConstructor()
+    {
+        $firebase = \Firebase\Firebase::initialize($this->firebaseConfig['base_url'], $this->token);
+        $this->assertEquals($firebase->getOption('base_url'), $this->firebaseConfig['base_url']);
+        $this->assertEquals($firebase->getOption('token'), $this->token);
     }
 
 } 

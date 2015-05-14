@@ -2,11 +2,14 @@
 
 require dirname(__DIR__) . '/src/Autoloader.php';
 
+use Firebase\Firebase;
+use Firebase\Psr4AutoloaderClass;
+
 //point to the vendor dir where all external dependencies are installed/downloaded
 $vendor = dirname(__DIR__) . '/vendor';
 
 //construct and register the autoloader
-$loader = new \Firebase\Psr4AutoloaderClass();
+$loader = new Psr4AutoloaderClass();
 $loader->register();
 
 //load guzzle dependency
@@ -24,10 +27,6 @@ require $vendor . '/react/promise/src/functions.php';
 //load firebase repository
 $loader->addNamespace('Firebase\\', dirname(__DIR__) . '/src');
 
-$fb = new Firebase\Firebase(array(
-    'token' => $argv[1],
-    'base_url' => $argv[2],
-    'timeout' => 30
-), new GuzzleHttp\Client());
+$fb = Firebase::initialize($argv[2], $argv[1]);
 
 print_r($fb->get($argv[3]));
