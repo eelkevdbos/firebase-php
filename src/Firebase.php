@@ -260,9 +260,10 @@ class Firebase implements FirebaseMethods
 
     /**
      * Build Query parameters for HTTP Request Client
+     * @param $data
      * @return array
      */
-    protected function buildQuery($data)
+    protected function buildQuery($data = null)
     {
         $params = array();
 
@@ -286,7 +287,7 @@ class Firebase implements FirebaseMethods
     protected function buildOptions($data = null)
     {
         $options = array(
-            'query' => new Query($this->buildQuery($data)),
+            'query' => $this->buildQuery($data),
             'debug' => $this->getOption('debug', false),
             'timeout' => $this->getOption('timeout', 0)
         );
