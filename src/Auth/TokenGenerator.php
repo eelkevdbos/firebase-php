@@ -1,6 +1,7 @@
 <?php namespace Firebase\Auth;
 
 use DateTime;
+use UnexpectedValueException;
 use Firebase\Exception\MissingEncoderException;
 
 class TokenGenerator
@@ -206,21 +207,24 @@ class TokenGenerator
             return $value->getTimestamp();
         }
 
-        throw new \UnexpectedValueException('Instance of DateTime required for a valid timestamp');
+        throw new UnexpectedValueException('Instance of DateTime required for a valid timestamp');
     }
 
     /**
      * Tests if data supplied is JSONifiable
      * @param $value
      * @return array
-     * @throws \UnexpectedValueException
+     * @throws UnexpectedValueException
      */
     protected function buildDataClaim($value)
     {
-        if (@json_encode($value) === false) {
+        $json = @json_encode($value);
+
+        //php 5.4 requires us to check for 'null' in some cases
+        if ($json === false || $json === "null") {
             $errorCode = function_exists('json_last_error') ? json_last_error() : '';
 
-            throw new \UnexpectedValueException($this->jsonErrorMessage($errorCode));
+            throw new UnexpectedValueException($this->jsonErrorMessage($errorCode));
         }
 
         return array('d', $value);
