@@ -217,8 +217,10 @@ class TokenGenerator
      */
     protected function buildDataClaim($value)
     {
-        if (@json_encode($value) === false && function_exists('json_last_error')) {
-            throw new \UnexpectedValueException($this->jsonErrorMessage(json_last_error()));
+        if (@json_encode($value) === false) {
+            $errorCode = function_exists('json_last_error') ? json_last_error() : '';
+
+            throw new \UnexpectedValueException($this->jsonErrorMessage($errorCode));
         }
 
         return array('d', $value);
