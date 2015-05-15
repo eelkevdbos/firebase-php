@@ -69,7 +69,7 @@ class TokenGenerator
      * @param string $secret
      * @param string $hashMethod
      * @return string
-     * @throws \Firebase\Exception\MissingEncoderException
+     * @throws MissingEncoderException
      */
     protected function encodeToken($claims, $secret, $hashMethod = 'HS256')
     {
@@ -218,12 +218,10 @@ class TokenGenerator
      */
     protected function buildDataClaim($value)
     {
-        $json = @json_encode($value);
+        @json_encode($value);
 
-        //php 5.4 requires us to check for 'null' in some cases
-        if ($json === false || $json === "null") {
-            $errorCode = function_exists('json_last_error') ? json_last_error() : '';
-
+        if (($errorCode = json_last_error()) !== JSON_ERROR_NONE) {
+            
             throw new UnexpectedValueException($this->jsonErrorMessage($errorCode));
         }
 
