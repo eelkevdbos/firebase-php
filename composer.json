@@ -8,9 +8,9 @@
         "email": "eelkevdbos@gmail.com"
     }],
     "require": {
-        "php": ">=5.4",
+        "php": ">=5.6.0",
         "firebase/php-jwt": "~2.0",
-        "guzzlehttp/guzzle": "5.*",
+        "guzzlehttp/guzzle": "6.*",
         "illuminate/support": ">=4.0"
     },
     "require-dev": {
