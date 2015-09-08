@@ -9,7 +9,7 @@
     }],
     "require": {
         "php": ">=5.4",
-        "firebase/php-jwt": "~2.0",
+        "firebase/php-jwt": "~3.0",
         "guzzlehttp/guzzle": "5.*",
         "illuminate/support": ">=4.0"
     },
