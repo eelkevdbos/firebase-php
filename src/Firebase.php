@@ -272,7 +272,18 @@ class Firebase implements FirebaseMethods
             $params = array_merge($params, $data->getParams());
             $params['orderBy'] = $data->getOrderBy();
         } elseif (is_array($data)) {
-            $params = array_merge($params, $data);
+            if (isset($data['shallow'])) {
+                $params['shallow'] = $data['shallow'];
+            }
+            if (isset($data['print'])) {
+                $params['shallow'] = $data['print'];
+            }
+            if (isset($data['format'])) {
+                $params['shallow'] = $data['format'];
+            }
+            if (isset($data['download'])) {
+                $params['shallow'] = $data['download'];
+            }
         }
 
         if ($token = $this->getOption('token', false)) {
