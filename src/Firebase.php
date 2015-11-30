@@ -90,10 +90,11 @@ class Firebase implements FirebaseMethods
 
     /**
      * Read data from path
-     * @param $path
+     * @param string $path
+     * @param null $criteria
      * @return mixed
      */
-    public function get($path = '', Criteria $criteria = null)
+    public function get($path = '', $criteria = null)
     {
         $request = $this->createRequest('GET', $path, $criteria);
         return $this->handleRequest($request);
