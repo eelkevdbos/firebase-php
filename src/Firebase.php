@@ -271,6 +271,8 @@ class Firebase implements FirebaseMethods
         if ($data instanceof Criteria) {
             $params = array_merge($params, $data->getParams());
             $params['orderBy'] = $data->getOrderBy();
+        } elseif (is_array($data)) {
+            $params = array_merge($params, $data);
         }
 
         if ($token = $this->getOption('token', false)) {
