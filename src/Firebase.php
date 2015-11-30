@@ -90,10 +90,11 @@ class Firebase implements FirebaseMethods
 
     /**
      * Read data from path
-     * @param $path
+     * @param string $path
+     * @param null $criteria
      * @return mixed
      */
-    public function get($path = '', Criteria $criteria = null)
+    public function get($path = '', $criteria = null)
     {
         $request = $this->createRequest('GET', $path, $criteria);
         return $this->handleRequest($request);
@@ -270,6 +271,19 @@ class Firebase implements FirebaseMethods
         if ($data instanceof Criteria) {
             $params = array_merge($params, $data->getParams());
             $params['orderBy'] = $data->getOrderBy();
+        } elseif (is_array($data)) {
+            if (isset($data['shallow'])) {
+                $params['shallow'] = $data['shallow'];
+            }
+            if (isset($data['print'])) {
+                $params['shallow'] = $data['print'];
+            }
+            if (isset($data['format'])) {
+                $params['shallow'] = $data['format'];
+            }
+            if (isset($data['download'])) {
+                $params['shallow'] = $data['download'];
+            }
         }
 
         if ($token = $this->getOption('token', false)) {
